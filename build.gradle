@@ -1,0 +1,26 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
+
+    id 'net.mamoe.mirai-console' version '2.10.0'
+}
+
+group = 'com.mcyoulong.star'
+version = '2.0-beta1.3.1'
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://maven.scijava.org/content/repositories/public/' }
+    maven { url 'https://jogamp.org/deployment/maven/' }
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: "com.google.guava", name:"guava", version: "19.0"
+    implementation 'org.java-websocket:Java-WebSocket:1.5.3'
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'org.graalvm.sdk:graal-sdk:22.0.0'
+    implementation 'org.graalvm.js:js:22.0.0'
+    implementation 'org.graalvm.js:js-scriptengine:22.0.0'
+    implementation 'org.graalvm.truffle:truffle-api:22.0.0'
+}
