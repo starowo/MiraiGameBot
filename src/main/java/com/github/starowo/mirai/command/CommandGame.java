@@ -1,8 +1,8 @@
 package com.github.starowo.mirai.command;
 
-import com.google.common.collect.Lists;
 import com.github.starowo.mirai.MSGHandler;
 import com.github.starowo.mirai.MiraiGamePlugin;
+import com.github.starowo.mirai.PluginConfiguration;
 import com.github.starowo.mirai.data.DataPlayer;
 import com.github.starowo.mirai.data.Manager;
 import com.github.starowo.mirai.game.*;
@@ -14,6 +14,7 @@ import com.github.starowo.mirai.game.santorini.Santorini;
 import com.github.starowo.mirai.game.treasurehunter.TreasureHunter;
 import com.github.starowo.mirai.game.ultictacmatoe.UltimateTicTacToe;
 import com.github.starowo.mirai.player.GamePlayer;
+import com.google.common.collect.Lists;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.contact.User;
@@ -46,7 +47,7 @@ public class CommandGame extends CommandBase {
 
     public Message process(User sender, String[] args, MessageChain messages) {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai"));
-        if(calendar.get(Calendar.YEAR) == 2022 && calendar.get(Calendar.MONTH) == Calendar.DECEMBER && calendar.get(Calendar.DAY_OF_MONTH) == 6) {
+        if (calendar.get(Calendar.YEAR) == 2022 && calendar.get(Calendar.MONTH) == Calendar.DECEMBER && calendar.get(Calendar.DAY_OF_MONTH) == 6) {
             return new MessageChainBuilder().append("此指令暂时停用").build();
         }
         if (args.length >= 1) {
@@ -83,6 +84,9 @@ public class CommandGame extends CommandBase {
                 return builder.build();
             }
             if (args[0].equalsIgnoreCase("sign") || args[0].equalsIgnoreCase("签到")) {
+                if (!PluginConfiguration.ENABLE_SIGN) {
+                    return new MessageChainBuilder().append("签到功能已关闭").build();
+                }
                 DataPlayer data;
                 if (sender instanceof Member) {
                     data = Manager.getByMember((Member) sender);
@@ -112,27 +116,40 @@ public class CommandGame extends CommandBase {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return new MessageChainBuilder()
+                MessageChainBuilder builder = new MessageChainBuilder()
                         .append(" 签到成功！\n")
-                        .append(critical ? "哇，金色传说！" : "")
-                        .append("获得了 ")
-                        .append(String.valueOf(credit))
-                        .append(" 积分和 ")
-                        .append(String.valueOf(exp))
-                        .append(" 经验！")
-                        .append("\n当前积分：")
-                        .append(String.valueOf(data.credit))
-                        .append("\n当前等级：")
-                        .append("\nLv. ")
-                        .append(String.valueOf(data.getLevelString()))
-                        .append(" (")
-                        .append(String.valueOf(data.exp))
-                        .append("/")
-                        .append(String.valueOf(data.maxExp))
-                        .append(")")
-                        .build();
+                        .append(critical ? "哇，金色传说！" : "");
+                if (PluginConfiguration.ENABLE_POINT || PluginConfiguration.ENABLE_LEVEL) {
+                    builder.append("获得了 ");
+                    if (PluginConfiguration.ENABLE_POINT) {
+                        builder.append(String.valueOf(credit)).append(" 积分");
+                    }
+                    if (PluginConfiguration.ENABLE_LEVEL) {
+                        if (PluginConfiguration.ENABLE_POINT) {
+                            builder.append(" 和 ");
+                        }
+                        builder.append(String.valueOf(exp)).append(" 经验");
+                    }
+                    builder.append("！");
+                    if (PluginConfiguration.ENABLE_POINT) {
+                        builder.append("\n当前积分：").append(String.valueOf(data.credit));
+                    }
+                    if (PluginConfiguration.ENABLE_LEVEL) {
+                        builder.append("\n当前等级：")
+                                .append("\nLv. ")
+                                .append(String.valueOf(data.getLevelString()))
+                                .append(" (").append(String.valueOf(data.exp))
+                                .append("/").append(String.valueOf(data.maxExp))
+                                .append(")");
+                    }
+                }
+
+                return builder.build();
             }
             if (args[0].equalsIgnoreCase("rank") || args[0].equalsIgnoreCase("排行")) {
+                if (!PluginConfiguration.ENABLE_LEVEL) {
+                    return new MessageChainBuilder().append("等级系统未启用").build();
+                }
                 DataPlayer data;
                 if (sender instanceof Member) {
                     data = Manager.getByMember((Member) sender);
@@ -176,23 +193,27 @@ public class CommandGame extends CommandBase {
                 } else {
                     data = Manager.getByUser(sender);
                 }
-                return new MessageChainBuilder()
+                MessageChainBuilder builder = new MessageChainBuilder()
                         .append(new At(sender.getId()))
-                        .append("\r\n玩家信息：")
-                        .append("\r\n  Lv. ")
-                        .append(String.valueOf(data.getLevelString()))
-                        .append(" (")
-                        .append(String.valueOf(data.exp))
-                        .append("/")
-                        .append(String.valueOf(data.maxExp))
-                        .append(")")
-                        .append("\r\n  积分：")
-                        .append(String.valueOf(data.credit))
-                        .append("\r\n 云顶之巢持有皮肤：")
-                        .append(data.unlocked.toString())
-                        .append("\r\n 云顶之巢所选皮肤：")
-                        .append(data.skin)
-                        .build();
+                        .append("\r\n玩家信息：");
+                if (PluginConfiguration.ENABLE_LEVEL) {
+                    builder.append("\r\n  Lv. ")
+                            .append(String.valueOf(data.getLevelString()))
+                            .append(" (")
+                            .append(String.valueOf(data.exp))
+                            .append("/")
+                            .append(String.valueOf(data.maxExp))
+                            .append(")");
+                }
+                if (PluginConfiguration.ENABLE_POINT) {
+                    builder.append("\r\n  积分：")
+                            .append(String.valueOf(data.credit))
+                            .append("\r\n 云顶之巢持有皮肤：")
+                            .append(data.unlocked.toString());
+                }
+                builder.append("\r\n 云顶之巢所选皮肤：")
+                        .append(data.skin);
+                return builder.build();
             }
             if (sender instanceof Member) {
                 Group group = ((Member) sender).getGroup();
@@ -227,16 +248,16 @@ public class CommandGame extends CommandBase {
                             }
                         }
                         if (b) {
-                            if(game instanceof Roulette24) {
+                            if (game instanceof Roulette24) {
                                 int rate = ((Roulette24) game).rate;
-                                if(rate > 0 && Manager.getByUser(sender).credit < rate * 300) {
+                                if (rate > 0 && Manager.getByUser(sender).credit < rate * 300) {
                                     return (new MessageChainBuilder().append("加入失败，你需要至少").append(String.valueOf(rate * 300)).append("积分才能加入此游戏")
                                             .build());
                                 }
                             }
                             if (game instanceof TreasureHunter) {
                                 int rate = ((TreasureHunter) game).rate;
-                                if(rate > 0 && Manager.getByUser(sender).credit < rate * 300) {
+                                if (rate > 0 && Manager.getByUser(sender).credit < rate * 300) {
                                     return (new MessageChainBuilder().append("加入失败，你需要至少").append(String.valueOf(rate * 300)).append("积分才能加入此游戏")
                                             .build());
                                 }
@@ -366,10 +387,10 @@ public class CommandGame extends CommandBase {
                                     .build());
                         }
                         if (args[1].equals("24轮盘")) {
-                            if(args.length == 3) {
+                            if (args.length == 3) {
                                 try {
                                     int rate = Integer.parseInt(args[2]);
-                                    if(rate < 0)
+                                    if (rate < 0)
                                         return (new MessageChainBuilder()
                                                 .append("倍率错误，请设置为不小于0的整数")
                                                 .build());
@@ -378,20 +399,20 @@ public class CommandGame extends CommandBase {
                                                 .append("倍率错误，最大倍率为5000")
                                                 .build());
                                     }
-                                    if(rate > 0 && Manager.getByUser(sender).credit < rate * 300) {
+                                    if (rate > 0 && Manager.getByUser(sender).credit < rate * 300) {
                                         return (new MessageChainBuilder().append("倍率错误，你需要至少").append(String.valueOf(rate * 300)).append("积分才能使用此倍率")
                                                 .build());
                                     }
                                     game = new Roulette24(group, rate);
-                                }catch (NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     return (new MessageChainBuilder()
                                             .append("倍率错误，请设置为不小于0的整数")
                                             .build());
                                 }
-                            }else {
+                            } else {
                                 int rate = Manager.getByUser(sender).credit >= 500 ? 1 : 0;
                                 game = new Roulette24(group, rate);
-                                group.sendMessage("游戏积分倍率:"+rate);
+                                group.sendMessage("游戏积分倍率:" + rate);
                             }
                             MiraiGamePlugin.INSTANCE.games.put(group.getId(), game);
                             MiraiGamePlugin.INSTANCE.addPlayer(group, (Member) sender, game);
@@ -671,7 +692,7 @@ public class CommandGame extends CommandBase {
                 return new MessageChainBuilder().append("未知的游戏，你可以使用/g list查看游戏列表").build();
             }
         }
-        if (sender.getId() == 1273300377L) {
+        if (sender.getId() == PluginConfiguration.OWNER_ID) {
             if (args.length >= 3) {
                 if (args[0].equalsIgnoreCase("exp")) {
                     String targetID = args[1].replaceAll("[^0-9]", "");
@@ -695,7 +716,6 @@ public class CommandGame extends CommandBase {
         }
         return new MessageChainBuilder().append("参数错误，使用 /g help或/g 帮助 获取帮助").build();
     }
-
 
 
 }

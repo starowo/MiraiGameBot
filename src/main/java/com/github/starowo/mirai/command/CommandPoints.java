@@ -1,5 +1,6 @@
 package com.github.starowo.mirai.command;
 
+import com.github.starowo.mirai.PluginConfiguration;
 import com.google.common.collect.Lists;
 import com.github.starowo.mirai.MiraiGamePlugin;
 import com.github.starowo.mirai.data.DataPlayer;
@@ -32,6 +33,9 @@ public class CommandPoints extends CommandBase {
 
     @Override
     public Message process(User sender, String[] args, MessageChain msg) {
+        if (!PluginConfiguration.ENABLE_POINT) {
+            return new MessageChainBuilder().append("积分系统未启用").build();
+        }
         if(args.length == 1) {
             if (args[0].equalsIgnoreCase("help")) {
                 return new MessageChainBuilder()

@@ -1,6 +1,7 @@
 package com.github.starowo.mirai.command;
 
 import com.github.starowo.mirai.MSGHandler;
+import com.github.starowo.mirai.PluginConfiguration;
 import com.github.starowo.mirai.data.DataPlayer;
 import com.github.starowo.mirai.data.Event;
 import com.github.starowo.mirai.data.Manager;
@@ -428,7 +429,7 @@ public class CommandEvent extends CommandBase {
     }
 
     private boolean hasPermission(Event event, User sender) {
-        return event.owner == sender.getId() || MSGHandler.admins.contains(sender.getId()) || sender.getId() == 1273300377L;
+        return event.owner == sender.getId() || MSGHandler.admins.contains(sender.getId()) || sender.getId() == PluginConfiguration.OWNER_ID;
     }
 
 }

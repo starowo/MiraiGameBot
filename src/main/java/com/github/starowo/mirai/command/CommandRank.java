@@ -1,5 +1,6 @@
 package com.github.starowo.mirai.command;
 
+import com.github.starowo.mirai.PluginConfiguration;
 import com.google.common.collect.Lists;
 import com.github.starowo.mirai.MSGHandler;
 import com.github.starowo.mirai.data.DataPlayer;
@@ -46,6 +47,9 @@ public class CommandRank extends CommandBase {
 
     @Override
     public Message process(User sender, String[] args, MessageChain msg) {
+        if (!PluginConfiguration.ENABLE_RANK) {
+            return new MessageChainBuilder().append("排位系统未启用").build();
+        }
         if(args.length == 0) {
             PlayerRank data = Manager.getRank(sender.getId());
             if(data == null || data.scores.isEmpty()) {
@@ -92,7 +96,7 @@ public class CommandRank extends CommandBase {
                     builder.append("你的排名:").append(String.valueOf(list.indexOf(data) + 1)).append(" (").append(String.valueOf(data.scores.get(args[1]))).append(")");
                 return builder.build();
             }
-            if(MSGHandler.admins.contains(sender.getId()) || sender.getId() == 1273300377L) {
+            if(MSGHandler.admins.contains(sender.getId()) || sender.getId() == PluginConfiguration.OWNER_ID) {
                 if (args[0].equalsIgnoreCase("ban")) {
                     long id = Long.parseLong(args[1].replaceAll("@", ""));
                     DataPlayer data = Manager.getByID(id);
@@ -126,7 +130,7 @@ public class CommandRank extends CommandBase {
             }
         }
         if(args.length == 4) {
-            if(MSGHandler.admins.contains(sender.getId()) || sender.getId() == 1273300377L) {
+            if(MSGHandler.admins.contains(sender.getId()) || sender.getId() == PluginConfiguration.OWNER_ID) {
                 if (args[0].equalsIgnoreCase("add")) {
                     long id = Long.parseLong(args[1].replaceAll("@", ""));
                     String game = args[2];

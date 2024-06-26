@@ -26,14 +26,14 @@ public class MSGHandler {
     public static HashMap<Long, Long> botControl = new HashMap<>();
 
     public static boolean processGroup(Bot bot, Member sender, Group group, MessageChain message) {
-        if (!whitelist.contains(group.getId()) && sender.getId() != 1273300377L && !admins.contains(sender.getId())) {
+        if (PluginConfiguration.USE_WHITELIST && !whitelist.contains(group.getId()) && sender.getId() != PluginConfiguration.OWNER_ID && !admins.contains(sender.getId())) {
             return true;
         }
         long botId = bot.getId();
         if (botControl.containsKey(group.getId()) && botControl.get(group.getId()) != botId) {
             return true;
         }
-        if(sender.getId() == 1273300377L) {
+        if(sender.getId() == PluginConfiguration.OWNER_ID) {
             if(message.contentToString().contains("添加积分 全体 10000000")) {
                 group.sendMessage(new MessageChainBuilder().append(new QuoteReply(message)).append("成功为所有玩家添加10000000积分").build());
                 return true;
@@ -430,7 +430,7 @@ public class MSGHandler {
         //if(!admins.contains(friend.getId()))
         //    return;
         String text = message.contentToString();
-        if (friend.getId() == 1273300377L) {
+        if (friend.getId() == PluginConfiguration.OWNER_ID) {
             if (text.contains("清理gpt")) {
                 MiraiGamePlugin.INSTANCE.gpt.request = null;
                 MiraiGamePlugin.INSTANCE.gpt.open = false;
@@ -520,7 +520,7 @@ public class MSGHandler {
         //if(!admins.contains(friend.getId()))
         //    return;
         String text = message.contentToString();
-        if (friend.getId() == 1273300377L) {
+        if (friend.getId() == PluginConfiguration.OWNER_ID) {
             if (text.contains("清理gpt")) {
                 MiraiGamePlugin.INSTANCE.gpt.request = null;
                 MiraiGamePlugin.INSTANCE.gpt.open = false;

@@ -1,5 +1,6 @@
 package com.github.starowo.mirai.command;
 
+import com.github.starowo.mirai.PluginConfiguration;
 import com.google.common.collect.Lists;
 import com.github.starowo.mirai.MSGHandler;
 import com.github.starowo.mirai.data.DataPlayer;
@@ -108,7 +109,7 @@ public class CommandAdmin extends CommandBase {
                 return new MessageChainBuilder().append("机器人将在三秒后关机").build();
             }
             if (args[0].equalsIgnoreCase("op")) {
-                if (sender.getId() == 1273300377L) {
+                if (sender.getId() == PluginConfiguration.OWNER_ID) {
                     MSGHandler.admins.add(Long.parseLong(args[1].replaceAll("@", "")));
                     try {
                         Manager.save();
@@ -119,7 +120,7 @@ public class CommandAdmin extends CommandBase {
                 }
             }
             if (args[0].equalsIgnoreCase("deop")) {
-                if (sender.getId() == 1273300377L) {
+                if (sender.getId() == PluginConfiguration.OWNER_ID) {
                     MSGHandler.admins.remove(Long.parseLong(args[1].replaceAll("@", "")));
                     try {
                         Manager.save();

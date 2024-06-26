@@ -1,6 +1,7 @@
 package com.github.starowo.mirai.command;
 
 import com.github.starowo.mirai.MSGHandler;
+import com.github.starowo.mirai.PluginConfiguration;
 import com.github.starowo.mirai.data.DataPlayer;
 import com.github.starowo.mirai.data.Manager;
 import com.github.starowo.mirai.data.Skin;
@@ -81,6 +82,11 @@ public class CommandSkin extends CommandBase {
         }
         if(args.length == 3) {
             if (args[0].equalsIgnoreCase("buy") || args[0].equals("购买")) {
+                if (!PluginConfiguration.ENABLE_POINT) {
+                    return new MessageChainBuilder()
+                            .append("积分系统未启用，皮肤无需购买即可使用。")
+                            .build();
+                }
                 if (args[1].equals("云顶之巢")) {
                     String buy = args[2].toLowerCase(Locale.ROOT);
                     try {
@@ -104,7 +110,7 @@ public class CommandSkin extends CommandBase {
                                         .build();
                             }
                         }
-                        if (data.level < skin.level) {
+                        if (data.level < skin.level && PluginConfiguration.ENABLE_LEVEL) {
                             return new MessageChainBuilder()
                                     .append("等级不足，你需要至少达到 Lv.")
                                     .append(String.valueOf(skin.level))
@@ -150,7 +156,7 @@ public class CommandSkin extends CommandBase {
                     try {
                         DataPlayer data = Manager.getByUser(user);
                         Skin skin = Skin.findSkin(target);
-                        if (data.unlocked.contains(skin.name)) {
+                        if (data.unlocked.contains(skin.name) || !PluginConfiguration.ENABLE_POINT) {
                             data.skin = skin.name;
                             try {
                                 Manager.save();
@@ -223,7 +229,7 @@ public class CommandSkin extends CommandBase {
                 }
             }
         }
-        if (args.length >= 4 && args[0].equalsIgnoreCase("give") && user.getId() == 1273300377L) {
+        if (args.length >= 4 && args[0].equalsIgnoreCase("give") && user.getId() == PluginConfiguration.OWNER_ID) {
             if (args[1].equals("云顶之巢")) {
                 String target = args[2].toLowerCase(Locale.ROOT);
                 try {

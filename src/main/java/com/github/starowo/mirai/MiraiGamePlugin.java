@@ -69,17 +69,17 @@ public final class MiraiGamePlugin extends JavaPlugin {
             e.printStackTrace();
         }
         GlobalEventChannel.INSTANCE.subscribeAlways(NewFriendRequestEvent.class, e -> {
-            if(e.getFromId() == 1273300377L || MSGHandler.admins.contains(e.getFromId())) e.accept();
+            if(e.getFromId() == PluginConfiguration.OWNER_ID || MSGHandler.admins.contains(e.getFromId())) e.accept();
         });
         GlobalEventChannel.INSTANCE.subscribeAlways(BotInvitedJoinGroupRequestEvent.class, e -> {
-            if(e.getInvitorId() == 1273300377L || MSGHandler.admins.contains(e.getInvitorId())) e.accept();
+            if(e.getInvitorId() == PluginConfiguration.OWNER_ID || MSGHandler.admins.contains(e.getInvitorId())) e.accept();
         });
         GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessageEvent.class, EmptyCoroutineContext.INSTANCE, ConcurrencyKind.CONCURRENT, EventPriority.HIGH, e -> {
             if (MSGHandler.processFriend(e.getBot(), e.getSender(), e.getMessage())) {
                 e.intercept();
             }
         /*            Friend friend = e.getSender();
-            if(e.getSender().getId() == 1273300377L) {
+            if(e.getSender().getId() == PluginConfiguration.OWNER_ID) {
                 MessageChain chain = e.getMessage();
                 String text = chain.contentToString();
                 if(text.contains("关机")) {
@@ -172,7 +172,7 @@ public final class MiraiGamePlugin extends JavaPlugin {
                 e.intercept();
             }
         /*            Friend friend = e.getSender();
-            if(e.getSender().getId() == 1273300377L) {
+            if(e.getSender().getId() == PluginConfiguration.OWNER_ID) {
                 MessageChain chain = e.getMessage();
                 String text = chain.contentToString();
                 if(text.contains("关机")) {

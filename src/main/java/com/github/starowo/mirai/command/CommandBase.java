@@ -1,6 +1,7 @@
 package com.github.starowo.mirai.command;
 
 import com.github.starowo.mirai.MSGHandler;
+import com.github.starowo.mirai.PluginConfiguration;
 import net.mamoe.mirai.contact.User;
 
 public abstract class CommandBase implements ICommand {
@@ -27,8 +28,8 @@ public abstract class CommandBase implements ICommand {
     public boolean hasPermission(User user) {
         if (level == 0) return true;
         if (level == 2)
-            return user.getId() == 1273300377L;
-        return MSGHandler.admins.contains(user.getId()) || user.getId() == 1273300377L;
+            return user.getId() == PluginConfiguration.OWNER_ID;
+        return MSGHandler.admins.contains(user.getId()) || user.getId() == PluginConfiguration.OWNER_ID;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.github.starowo.mirai.data;
 
+import com.github.starowo.mirai.PluginConfiguration;
 import com.google.common.collect.Lists;
 import com.github.starowo.mirai.command.CommandRank;
 
@@ -25,6 +26,9 @@ public class PlayerRank implements Serializable {
     }
 
     public int process(String game, float k, int avg) {
+        if (!PluginConfiguration.ENABLE_RANK) {
+            return 0;
+        }
         int score = scores.getOrDefault(game, 1200);
         if(k > 0) {
             double sigm = game.equals("云顶之巢") ? sigmoid_comb(score - avg) : sigmoid(score - avg);
